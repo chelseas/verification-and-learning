@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V⇄L — Verification for Learning &amp; Learning for Verification</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg: #0a0f1c;
+  --bg2: #0d1424;
+  --grid: rgba(150,175,220,0.07);
+  --grid-major: rgba(150,175,220,0.14);
+  --paper: #e8ecf4;
+  --muted: #8a93ab;
+  --muted2: #5d6787;
+  --cyan: #52dfca;
+  --cyan-dim: rgba(82,223,202,0.15);
+  --violet: #a496ff;
+  --violet-dim: rgba(164,150,255,0.15);
+  --amber: #f5b94d;
+  --amber-dim: rgba(245,185,77,0.15);
+  --line: rgba(232,236,244,0.12);
+  --radius: 3px;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -5%, rgba(82,223,202,0.06), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(164,150,255,0.05), transparent 60%),
+    var(--bg);
+  color: var(--paper);
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.grid-bg{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+  mask-image: linear-gradient(to bottom, black, black 70%, transparent 100%);
+}
+
+.wrap{
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ---------- typography ---------- */
+h1, h2, h3, .display{
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+}
+
+.eyebrow{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before{
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: var(--cyan);
+  display: inline-block;
+}
+
+.mono{ font-family: 'IBM Plex Mono', monospace; }
+.muted{ color: var(--muted); }
+
+p{ color: var(--muted); max-width: 60ch; }
+
+a{ color: inherit; }
+
+/* ---------- nav ---------- */
+nav{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(10,15,28,0.75);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wordmark{
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.wordmark .arrows{ color: var(--cyan); }
+.wordmark .sub{
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted2);
+  letter-spacing: 0.06em;
+}
+.nav-links{
+  display: flex;
+  gap: 30px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+}
+.nav-links a{
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a:hover{ color: var(--cyan); }
+.nav-links a:focus-visible, a:focus-visible, button:focus-visible{
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px){
+  .nav-links{ display:none; }
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding: 84px 0 60px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+}
+@media (max-width: 980px){
+  .hero{ grid-template-columns: 1fr; padding-top: 56px; }
+}
+
+.hero h1{
+  font-size: clamp(34px, 4.6vw, 54px);
+  line-height: 1.08;
+  margin: 18px 0 22px;
+}
+.hero h1 .flip{
+  color: var(--cyan);
+}
+.hero p.lede{
+  font-size: 16.5px;
+  color: var(--muted);
+  max-width: 46ch;
+  margin-bottom: 30px;
+}
+
+.tag-row{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 34px;
+}
+.tag{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.btn-row{ display:flex; gap: 14px; flex-wrap: wrap; }
+.btn{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+.btn-primary{
+  background: var(--cyan);
+  color: #06110f;
+  font-weight: 600;
+}
+.btn-primary:hover{ background: #6ce9d6; transform: translateY(-1px); }
+.btn-ghost{
+  border-color: var(--line);
+  color: var(--paper);
+}
+.btn-ghost:hover{ border-color: var(--cyan); color: var(--cyan); }
+
+/* ---------- hero demo panel ---------- */
+.demo-panel{
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  overflow: hidden;
+}
+.demo-panel-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.demo-panel-head .dots{ display:flex; gap:6px; }
+.demo-panel-head .dots span{
+  width:8px; height:8px; border-radius:50%;
+  background: var(--muted2);
+}
+.demo-panel-title{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+#heroCanvasWrap{ position: relative; }
+#heroCanvas{ width: 100%; display: block; touch-action: none; cursor: grab; }
+#heroCanvas.dragging{ cursor: grabbing; }
+
+.demo-panel-foot{
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.status-line{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot{
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+.status-dot.unsafe{ background: var(--amber); box-shadow: 0 0 8px var(--amber);}
+.mini-btn{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mini-btn:hover{ border-color: var(--cyan); color: var(--cyan); }
+.mini-btn.active{ border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+
+/* ---------- sections general ---------- */
+section{ padding: 96px 0; border-top: 1px solid var(--line); }
+.section-head{ max-width: 640px; margin-bottom: 48px; }
+.section-head h2{ font-size: clamp(26px, 3vw, 36px); margin-top: 14px; }
+.section-head p{ margin-top: 14px; }
+
+/* ---------- mission ---------- */
+.mission-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+@media (max-width: 900px){ .mission-grid{ grid-template-columns: 1fr; } }
+
+.equation-block{
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 28px;
+  background: rgba(255,255,255,0.015);
+}
+.equation-block .flow{
+  display:flex; align-items:center; gap: 14px; flex-wrap: wrap;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 19px;
+  margin-bottom: 18px;
+}
+.equation-block .flow .node{
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.equation-block .flow .node.a{ color: var(--cyan); border-color: rgba(82,223,202,0.35); }
+.equation-block .flow .node.b{ color: var(--violet); border-color: rgba(164,150,255,0.35); }
+.equation-block .flow .arrow{ color: var(--muted2); font-size: 16px; }
+.equation-block .caption{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.7;
+}
+
+/* ---------- pillars ---------- */
+.pillars{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+@media (max-width: 900px){ .pillars{ grid-template-columns: 1fr; } }
+.pillar{
+  background: var(--bg2);
+  padding: 30px 26px;
+  transition: background 0.25s;
+  position: relative;
+}
+.pillar:hover{ background: #0f1830; }
+.pillar .axis{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.pillar h3{ font-size: 19px; margin-bottom: 10px; }
+.pillar p{ font-size: 14px; }
+.pillar .detail{
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--muted2);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease, padding-top 0.3s ease;
+}
+.pillar:hover .detail, .pillar:focus-within .detail{
+  max-height: 120px;
+  opacity: 1;
+}
+
+/* ---------- NN bound demo ---------- */
+.bound-demo{
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(255,255,255,0.015);
+}
+.bound-controls{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 16px 20px 4px;
+}
+#nnSvgWrap{ padding: 10px 10px 4px; }
+.bound-legend{
+  display: flex;
+  gap: 22px;
+  padding: 4px 20px 18px;
+  flex-wrap: wrap;
+}
+.legend-item{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.legend-swatch{ width: 14px; height: 5px; border-radius: 2px; }
+
+/* ---------- projects ---------- */
+.projects{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+@media (max-width: 860px){ .projects{ grid-template-columns: 1fr; } }
+.project-card{
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 28px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.project-card:hover{ border-color: rgba(82,223,202,0.4); transform: translateY(-2px); }
+.project-card .ptag{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--violet);
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.project-card h3{ font-size: 21px; margin-bottom: 10px; }
+.project-card p{ font-size: 14px; margin-bottom: 16px; }
+.stack-row{ display:flex; gap: 8px; flex-wrap: wrap; }
+.stack-chip{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+}
+
+/* ---------- join ---------- */
+.join{
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 50px;
+}
+@media (max-width: 900px){ .join{ grid-template-columns: 1fr; } }
+.join-list{ margin-top: 22px; display:flex; flex-direction:column; gap:16px; }
+.join-item{ display:flex; gap: 14px; align-items:flex-start; }
+.join-item .marker{
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--cyan);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.join-item div p{ font-size: 14px; margin: 0; color: var(--muted); }
+.join-item div strong{ color: var(--paper); font-weight: 500; font-size: 14.5px; }
+
+.postcard{
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 28px;
+  background: rgba(255,255,255,0.015);
+}
+.postcard .field{ margin-bottom: 16px; }
+.postcard .k{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.postcard .v{ font-size: 14.5px; color: var(--paper); }
+.postcard .v.accent{ color: var(--cyan); }
+
+/* ---------- footer ---------- */
+footer{
+  border-top: 1px solid var(--line);
+  padding: 40px 0 60px;
+}
+.footer-inner{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted2);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="wordmark"><span class="arrows">V⇄L</span><span class="sub">VERIFICATION ⇄ LEARNING LAB</span></div>
+    <div class="nav-links">
+      <a href="#mission">Mission</a>
+      <a href="#research">Research</a>
+      <a href="#demo">Bound Demo</a>
+      <a href="#projects">Projects</a>
+      <a href="#join">Join</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" style="border-top:none; padding-bottom:60px;">
+    <div>
+      <div class="eyebrow">Emmy Noether Research Group · DFG · MPI‑IS Tübingen</div>
+      <h1>Proving neural networks <span class="flip">won't</span> do the wrong thing.</h1>
+      <p class="lede">We build formal safety guarantees for learning-enabled autonomous systems — reachability analysis, neural network verification, and safe control — treating verification and learning as two directions of the same problem.</p>
+      <div class="tag-row">
+        <span class="tag">reachability analysis</span>
+        <span class="tag">NN verification</span>
+        <span class="tag">safe control</span>
+        <span class="tag">Julia</span>
+      </div>
+      <div class="btn-row">
+        <a href="#demo" class="btn btn-primary">Try the bound demo →</a>
+        <a href="#join" class="btn btn-ghost">Join the group</a>
+      </div>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-panel-head">
+        <div class="demo-panel-title">reachable_set_sandbox.jl — live</div>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div>
+      <div id="heroCanvasWrap">
+        <canvas id="heroCanvas" width="600" height="440"></canvas>
+      </div>
+      <div class="demo-panel-foot">
+        <div class="status-line">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">drag the box, then propagate</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="mini-btn" id="btnPropagate">▶ Propagate</button>
+          <button class="mini-btn" id="btnReset">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section id="mission">
+    <div class="section-head">
+      <div class="eyebrow">Thesis</div>
+      <h2>Two directions, one loop.</h2>
+      <p>Most of formal methods asks how to verify a system after it's built. We also ask the reverse: how should verification requirements shape the way a system learns in the first place.</p>
+    </div>
+    <div class="mission-grid">
+      <div class="equation-block">
+        <div class="flow">
+          <span class="node a">Learning</span>
+          <span class="arrow">⟶</span>
+          <span class="node b">Verification</span>
+        </div>
+        <div class="caption">A trained policy or perception network is treated as an unknown, Lipschitz-ish function. Reachability analysis and NN bound-propagation certify what it can and cannot do — before it ever meets the real world.</div>
+      </div>
+      <div class="equation-block">
+        <div class="flow">
+          <span class="node b">Verification</span>
+          <span class="arrow">⟶</span>
+          <span class="node a">Learning</span>
+        </div>
+        <div class="caption">Verification isn't only a check at the end. Reachability constraints and provable bounds can be folded back into training and control synthesis, so the learned component is shaped by what needs to be provable.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH PILLARS -->
+  <section id="research">
+    <div class="section-head">
+      <div class="eyebrow">Research</div>
+      <h2>Three axes, one state space.</h2>
+      <p>Each project in the group sits somewhere on these three axes — often on more than one at once.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar" tabindex="0">
+        <div class="axis">AXIS X — SET PROPAGATION</div>
+        <h3>Reachability analysis</h3>
+        <p>Computing what states a system can reach — forward from an initial set, or backward from an unsafe one.</p>
+        <div class="detail">Forward: overapproximate the flow of an initial set under known or learned dynamics.<br>Backward: find every initial condition that can still reach an unsafe region — the basis for BackReach.</div>
+      </div>
+      <div class="pillar" tabindex="0">
+        <div class="axis">AXIS Y — NETWORK BOUNDS</div>
+        <h3>Neural network verification</h3>
+        <p>Certifying input–output properties of trained networks with sound, tight bound-propagation.</p>
+        <div class="detail">Interval bound propagation, CROWN-style linear relaxation, α/β optimization, and branch-and-bound — the machinery behind CrownLite.</div>
+      </div>
+      <div class="pillar" tabindex="0">
+        <div class="axis">AXIS Z — CLOSED LOOP</div>
+        <h3>Safe control</h3>
+        <p>Combining the two: certifying that a neural network <em>inside a control loop</em> keeps the whole system safe.</p>
+        <div class="detail">Neural feedback loops, invariance conditions, and fixed-point reachability for policies that are themselves learned.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOUND DEMO -->
+  <section id="demo">
+    <div class="section-head">
+      <div class="eyebrow">Interactive</div>
+      <h2>Watch a bound get tighter.</h2>
+      <p>Naive interval bound propagation (IBP) is sound but loose — errors compound layer by layer. Linear relaxation (CROWN-style) keeps a symbolic bound instead of a box, and stays far tighter through depth. Step through the layers below.</p>
+    </div>
+
+    <div class="bound-demo">
+      <div class="bound-controls">
+        <button class="mini-btn active" id="modeBoth">IBP vs. CROWN</button>
+        <button class="mini-btn" id="modeIBP">IBP only</button>
+        <button class="mini-btn" id="modeCROWN">CROWN only</button>
+        <span style="flex:1"></span>
+        <button class="mini-btn" id="btnStepBack">◂ layer</button>
+        <button class="mini-btn" id="btnStepFwd">layer ▸</button>
+        <button class="mini-btn" id="btnStepPlay">▶ auto</button>
+      </div>
+      <div id="nnSvgWrap"></div>
+      <div class="bound-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--violet)"></span> IBP bound (loose)</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--cyan)"></span> CROWN bound (tight)</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span> current layer</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-head">
+      <div class="eyebrow">Projects</div>
+      <h2>What's running in the lab.</h2>
+    </div>
+    <div class="projects">
+      <div class="project-card">
+        <div class="ptag">BACKWARD REACHABILITY</div>
+        <h3>BackReach</h3>
+        <p>A Julia package for backward reachability of neural-network-controlled systems — combining polyhedral enclosures with CROWN-based relaxation to backproject unsafe sets through a learned controller.</p>
+        <div class="stack-row">
+          <span class="stack-chip">Julia</span>
+          <span class="stack-chip">OvertPoly</span>
+          <span class="stack-chip">CROWN backprojection</span>
+          <span class="stack-chip">vertex &amp; per-simplex LP</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="ptag">NN VERIFICATION</div>
+        <h3>CrownLite</h3>
+        <p>A native Julia reimplementation of α,β-CROWN — backward substitution, α-CROWN slope optimization, MILP encoding, and full branch-and-bound verification, without leaving the Julia ecosystem.</p>
+        <div class="stack-row">
+          <span class="stack-chip">Julia</span>
+          <span class="stack-chip">JuMP / HiGHS</span>
+          <span class="stack-chip">branch &amp; bound</span>
+          <span class="stack-chip">NeuralVerification.jl</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section id="join">
+    <div class="join">
+      <div>
+        <div class="eyebrow">Join</div>
+        <h2 style="margin-top:14px; font-size: clamp(24px,3vw,32px);">We're starting up — early positions available.</h2>
+        <p style="margin-top:14px;">The group launches in Tübingen this fall. If reachability, verification, or safe learning is your thing, get in touch before the shape of the group is set.</p>
+        <div class="join-list">
+          <div class="join-item">
+            <span class="marker">→</span>
+            <div><strong>PhD students</strong><p>Background in controls, formal methods, or ML — strong Julia or numerical computing a plus.</p></div>
+          </div>
+          <div class="join-item">
+            <span class="marker">→</span>
+            <div><strong>Postdocs</strong><p>Independent research direction within reachability, NN verification, or safe control.</p></div>
+          </div>
+          <div class="join-item">
+            <span class="marker">→</span>
+            <div><strong>Visiting researchers</strong><p>Short- or medium-term visits welcome — reach out with a topic in mind.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="postcard">
+        <div class="field">
+          <div class="k">GROUP</div>
+          <div class="v">Verification for Learning &amp; Learning for Verification</div>
+        </div>
+        <div class="field">
+          <div class="k">FUNDING</div>
+          <div class="v">Emmy Noether Programme, DFG</div>
+        </div>
+        <div class="field">
+          <div class="k">HOST INSTITUTE</div>
+          <div class="v">Max Planck Institute for Intelligent Systems, Tübingen</div>
+        </div>
+        <div class="field">
+          <div class="k">START</div>
+          <div class="v">Fall 2026</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <div class="k">CONTACT</div>
+          <div class="v accent">[your email] · [your.domain here]</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>V⇄L Lab — MPI-IS Tübingen</span>
+    <span>Reachability · NN Verification · Safe Control</span>
+  </div>
+</footer>
+
+<script>
+/* ============ HERO: REACHABLE SET SANDBOX ============ */
+(function(){
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('heroCanvasWrap');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const btnPropagate = document.getElementById('btnPropagate');
+  const btnReset = document.getElementById('btnReset');
+
+  let W = 600, H = 440;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize(){
+    const rect = wrap.getBoundingClientRect();
+    W = rect.width;
+    H = W * (440/600);
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw();
+  }
+
+  // state-space <-> pixel mapping. state range roughly [-1.3, 1.3]
+  const range = 1.3;
+  function toPx(pt){ return { x: W/2 + (pt.x/range)*(W/2)*0.92, y: H/2 - (pt.y/range)*(H/2)*0.92 }; }
+  function toState(px, py){ return { x: ((px - W/2)/((W/2)*0.92))*range, y: -((py - H/2)/((H/2)*0.92))*range }; }
+
+  // initial box (state coords), two corners
+  let box = { x1: -0.85, y1: 0.55, x2: -0.45, y2: 0.9 };
+  const unsafe = { cx: 0.6, cy: -0.45, r: 0.28 };
+
+  let tube = []; // array of polygons (each = array of {x,y})
+  let animFrame = null;
+  let playing = false;
+  let violated = false;
+  let dragMode = null; // 'move' | 'h1' | 'h2'
+  let dragOffset = {x:0,y:0};
+
+  function corners(){
+    return [
+      {x: box.x1, y: box.y1},
+      {x: box.x2, y: box.y1},
+      {x: box.x2, y: box.y2},
+      {x: box.x1, y: box.y2},
+    ];
+  }
+
+  function applyStep(poly, theta, scale, grow){
+    const cos = Math.cos(theta), sin = Math.sin(theta);
+    // centroid
+    let cx=0, cy=0;
+    poly.forEach(p=>{cx+=p.x;cy+=p.y;});
+    cx/=poly.length; cy/=poly.length;
+    return poly.map(p=>{
+      // linear map about origin (rotation + contraction)
+      let x = p.x*cos - p.y*sin;
+      let y = p.x*sin + p.y*cos;
+      x *= scale; y *= scale;
+      // inflate slightly from centroid to represent bounded disturbance
+      const ncx = cx*cos - cy*sin, ncy = cx*sin + cy*cos;
+      const dx = x - ncx*scale, dy = y - ncy*scale;
+      const len = Math.hypot(dx,dy) || 1;
+      return { x: x + (dx/len)*grow, y: y + (dy/len)*grow };
+    });
+  }
+
+  function computeTube(){
+    let poly = corners();
+    const steps = 26;
+    const theta = 0.19;
+    const scale = 0.955;
+    const grow = 0.006;
+    const out = [poly];
+    violated = false;
+    let violationStep = -1;
+    for(let i=0;i<steps;i++){
+      poly = applyStep(poly, theta, scale, grow);
+      out.push(poly);
+      // collision check
+      for(const p of poly){
+        if(Math.hypot(p.x-unsafe.cx, p.y-unsafe.cy) < unsafe.r){
+          if(!violated){ violated = true; violationStep = out.length-1; }
+        }
+      }
+    }
+    return { out, violationStep };
+  }
+
+  function drawGridState(){
+    // subtle axes through origin
+    const o = toPx({x:0,y:0});
+    ctx.strokeStyle = 'rgba(150,175,220,0.16)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, o.y); ctx.lineTo(W, o.y);
+    ctx.moveTo(o.x, 0); ctx.lineTo(o.x, H);
+    ctx.stroke();
+  }
+
+  function drawUnsafe(){
+    const c = toPx({x:unsafe.cx, y:unsafe.cy});
+    const rpx = (unsafe.r/range)*(W/2)*0.92;
+    ctx.save();
+    ctx.setLineDash([5,5]);
+    ctx.strokeStyle = 'rgba(245,185,77,0.7)';
+    ctx.fillStyle = 'rgba(245,185,77,0.08)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, rpx, 0, Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = 'rgba(245,185,77,0.85)';
+    ctx.font = '10.5px IBM Plex Mono, monospace';
+    ctx.fillText('unsafe set', c.x - 22, c.y + rpx + 16);
+  }
+
+  function drawPoly(poly, strokeStyle, fillStyle, lw){
+    ctx.beginPath();
+    poly.forEach((p,i)=>{
+      const px = toPx(p);
+      if(i===0) ctx.moveTo(px.x, px.y); else ctx.lineTo(px.x, px.y);
+    });
+    ctx.closePath();
+    if(fillStyle){ ctx.fillStyle = fillStyle; ctx.fill(); }
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lw || 1.5;
+    ctx.stroke();
+  }
+
+  let revealCount = 0; // how many tube steps to show
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    drawGridState();
+    drawUnsafe();
+
+    if(tube.length && revealCount > 0){
+      const n = Math.min(revealCount, tube.length);
+      for(let i=0;i<n;i++){
+        const alpha = 0.08 + 0.55*(i/n);
+        const isLast = i === n-1;
+        drawPoly(tube[i],
+          isLast ? '#52dfca' : `rgba(82,223,202,${alpha})`,
+          isLast ? 'rgba(82,223,202,0.14)' : null,
+          isLast ? 2 : 1);
+      }
+    } else {
+      // just draw the initial box
+      drawPoly(corners(), '#52dfca', 'rgba(82,223,202,0.14)', 2);
+    }
+
+    // handles
+    if(!playing){
+      const h1 = toPx({x:box.x1,y:box.y1});
+      const h2 = toPx({x:box.x2,y:box.y2});
+      [h1,h2].forEach(h=>{
+        ctx.fillStyle = '#0a0f1c';
+        ctx.strokeStyle = '#52dfca';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.rect(h.x-5, h.y-5, 10, 10);
+        ctx.fill(); ctx.stroke();
+      });
+    }
+
+    ctx.fillStyle = 'rgba(138,147,171,0.9)';
+    ctx.font = '10.5px IBM Plex Mono, monospace';
+    ctx.fillText('initial set X₀', toPx({x:box.x1,y:box.y2}).x, toPx({x:box.x1,y:box.y2}).y + 16);
+  }
+
+  function setStatus(text, unsafeState){
+    statusText.textContent = text;
+    statusDot.classList.toggle('unsafe', !!unsafeState);
+  }
+
+  function resetSim(){
+    if(animFrame) cancelAnimationFrame(animFrame);
+    playing = false;
+    tube = [];
+    revealCount = 0;
+    setStatus('drag the box, then propagate', false);
+    draw();
+  }
+
+  function playSim(){
+    const {out, violationStep} = computeTube();
+    tube = out;
+    revealCount = 0;
+    playing = true;
+    canvas.classList.remove('dragging');
+    setStatus('propagating…', false);
+    const totalSteps = tube.length;
+    const perStep = 90; // ms
+    let last = performance.now();
+    let acc = 0;
+
+    function frame(t){
+      const dt = t - last; last = t; acc += dt;
+      while(acc > perStep && revealCount < totalSteps){
+        revealCount++;
+        acc -= perStep;
+        if(violationStep >=0 && revealCount === violationStep){
+          setStatus('reachable set enters the unsafe region ✗', true);
+        }
+      }
+      draw();
+      if(revealCount < totalSteps){
+        animFrame = requestAnimationFrame(frame);
+      } else {
+        playing = false;
+        if(violationStep === -1){
+          setStatus('safe for all 26 steps — no sample entered the unsafe set ✓', false);
+        }
+      }
+    }
+    animFrame = requestAnimationFrame(frame);
+  }
+
+  btnPropagate.addEventListener('click', ()=>{ if(!playing) playSim(); });
+  btnReset.addEventListener('click', resetSim);
+
+  // dragging handles / box
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { px: clientX - rect.left, py: clientY - rect.top };
+  }
+
+  function pointerDown(e){
+    if(playing) return;
+    const {px, py} = getPos(e);
+    const h1 = toPx({x:box.x1,y:box.y1});
+    const h2 = toPx({x:box.x2,y:box.y2});
+    const near = (a,b,r)=> Math.hypot(a.x-b.x, a.y-b.y) < r;
+    if(near({x:px,y:py}, h1, 12)){ dragMode = 'h1'; }
+    else if(near({x:px,y:py}, h2, 12)){ dragMode = 'h2'; }
+    else {
+      const tl = toPx({x:box.x1,y:box.y2});
+      const br = toPx({x:box.x2,y:box.y1});
+      if(px > tl.x-2 && px < br.x+2 && py > toPx({x:0,y:box.y2}).y-2 && py < toPx({x:0,y:box.y1}).y+2){
+        dragMode = 'move';
+        const st = toState(px,py);
+        dragOffset = { x: st.x - box.x1, y: st.y - box.y1 };
+      }
+    }
+    if(dragMode){ canvas.classList.add('dragging'); tube=[]; revealCount=0; setStatus('adjusting initial set…', false); }
+    e.preventDefault();
+  }
+  function pointerMove(e){
+    if(!dragMode) return;
+    const {px, py} = getPos(e);
+    const st = toState(px,py);
+    const clamp = v => Math.max(-1.15, Math.min(1.15, v));
+    if(dragMode === 'h1'){ box.x1 = clamp(Math.min(st.x, box.x2-0.08)); box.y1 = clamp(Math.max(st.y, box.y2+0.08 < box.y1 ? box.y1: st.y)); box.y1 = clamp(st.y < box.y2 ? box.y2+0.08 : st.y); }
+    else if(dragMode === 'h2'){ box.x2 = clamp(Math.max(st.x, box.x1+0.08)); box.y2 = clamp(st.y > box.y1 ? box.y1-0.08 : st.y); }
+    else if(dragMode === 'move'){
+      const w = box.x2-box.x1, h = box.y1-box.y2;
+      let nx1 = clamp(st.x - dragOffset.x);
+      let ny1 = clamp(st.y - dragOffset.y);
+      box.x1 = nx1; box.x2 = nx1 + w;
+      box.y1 = ny1; box.y2 = ny1 - h;
+    }
+    draw();
+    e.preventDefault();
+  }
+  function pointerUp(){
+    if(dragMode){ dragMode = null; canvas.classList.remove('dragging'); setStatus('drag the box, then propagate', false); }
+  }
+
+  canvas.addEventListener('mousedown', pointerDown);
+  window.addEventListener('mousemove', pointerMove);
+  window.addEventListener('mouseup', pointerUp);
+  canvas.addEventListener('touchstart', pointerDown, {passive:false});
+  window.addEventListener('touchmove', pointerMove, {passive:false});
+  window.addEventListener('touchend', pointerUp);
+
+  window.addEventListener('resize', resize);
+  resize();
+})();
+
+/* ============ BOUND TIGHTENING DEMO (SVG) ============ */
+(function(){
+  const wrapEl = document.getElementById('nnSvgWrap');
+  const layers = [2, 4, 4, 1]; // node counts per layer
+  const layerNames = ['input', 'hidden 1', 'hidden 2', 'output'];
+
+  // Precomputed illustrative bound widths per layer (IBP grows faster than CROWN)
+  const ibpWidths =   [0.10, 0.34, 0.62, 0.95];
+  const crownWidths = [0.10, 0.20, 0.28, 0.36];
+
+  let currentLayer = 0;
+  let mode = 'both'; // both | ibp | crown
+  let playTimer = null;
+
+  const svgW = 620, svgH = 260;
+  const marginX = 60;
+  const colGap = (svgW - marginX*2) / (layers.length - 1);
+
+  function nodeY(li, ni){
+    const n = layers[li];
+    const usable = svgH - 60;
+    const step = usable / (n + 1);
+    return 30 + step * (ni+1);
+  }
+  function nodeX(li){ return marginX + li*colGap; }
+
+  function render(){
+    let svg = `<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" style="display:block;">`;
+
+    // edges
+    for(let li=0; li<layers.length-1; li++){
+      for(let a=0; a<layers[li]; a++){
+        for(let b=0; b<layers[li+1]; b++){
+          const x1 = nodeX(li), y1 = nodeY(li,a);
+          const x2 = nodeX(li+1), y2 = nodeY(li+1,b);
+          const active = li === currentLayer;
+          svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${active ? 'rgba(245,185,77,0.55)':'rgba(150,175,220,0.14)'}" stroke-width="${active?1.4:1}"/>`;
+        }
+      }
+    }
+
+    // nodes + bound bars
+    for(let li=0; li<layers.length; li++){
+      for(let ni=0; ni<layers[li]; ni++){
+        const x = nodeX(li), y = nodeY(li,ni);
+        const isActive = li === currentLayer;
+        const isPast = li <= currentLayer;
+        const r = isActive ? 7 : 5.5;
+        const fill = isActive ? '#f5b94d' : (isPast ? '#52dfca' : 'rgba(150,175,220,0.35)');
+        svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${isActive?'stroke="#f5b94d" stroke-width="2"':''} opacity="${isPast?1:0.45}"/>`;
+
+        // bound bar under first node of each layer only (representative), drawn once per layer at bottom label row instead
+      }
+    }
+
+    // layer labels + bound bars along bottom
+    for(let li=0; li<layers.length; li++){
+      const x = nodeX(li);
+      const isPast = li <= currentLayer;
+      svg += `<text x="${x}" y="${svgH-30}" text-anchor="middle" fill="rgba(138,147,171,0.85)" font-family="IBM Plex Mono, monospace" font-size="10.5">${layerNames[li]}</text>`;
+
+      if(isPast){
+        const barY = svgH - 18;
+        const barMaxW = 76;
+        const cx = x;
+        if(mode !== 'ibp'){
+          const w = crownWidths[li]*barMaxW;
+          svg += `<rect x="${cx-barMaxW/2}" y="${barY}" width="${barMaxW}" height="4" rx="2" fill="rgba(150,175,220,0.12)"/>`;
+          svg += `<rect x="${cx-w/2}" y="${barY}" width="${w}" height="4" rx="2" fill="#52dfca"/>`;
+        }
+        if(mode !== 'crown'){
+          const w2 = ibpWidths[li]*76;
+          const y2 = barY + 8;
+          svg += `<rect x="${cx-38}" y="${y2}" width="76" height="4" rx="2" fill="rgba(150,175,220,0.12)"/>`;
+          svg += `<rect x="${cx-w2/2}" y="${y2}" width="${w2}" height="4" rx="2" fill="#a496ff"/>`;
+        }
+      }
+    }
+
+    svg += `</svg>`;
+    wrapEl.innerHTML = svg;
+  }
+
+  document.getElementById('modeBoth').addEventListener('click', (e)=>{ setMode('both', e.target); });
+  document.getElementById('modeIBP').addEventListener('click', (e)=>{ setMode('ibp', e.target); });
+  document.getElementById('modeCROWN').addEventListener('click', (e)=>{ setMode('crown', e.target); });
+  function setMode(m, el){
+    mode = m;
+    document.querySelectorAll('.bound-controls .mini-btn').forEach(b=>b.classList.remove('active'));
+    if(el) el.classList.add('active');
+    render();
+  }
+
+  document.getElementById('btnStepFwd').addEventListener('click', ()=>{
+    currentLayer = Math.min(layers.length-1, currentLayer+1); render();
+  });
+  document.getElementById('btnStepBack').addEventListener('click', ()=>{
+    currentLayer = Math.max(0, currentLayer-1); render();
+  });
+  document.getElementById('btnStepPlay').addEventListener('click', (e)=>{
+    if(playTimer){ clearInterval(playTimer); playTimer=null; e.target.textContent='▶ auto'; return; }
+    e.target.textContent = '⏸ pause';
+    currentLayer = 0; render();
+    playTimer = setInterval(()=>{
+      currentLayer++;
+      if(currentLayer > layers.length-1){
+        currentLayer = 0;
+      }
+      render();
+    }, 900);
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
