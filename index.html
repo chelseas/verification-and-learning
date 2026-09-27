@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V⇄L — Verification for Learning &amp; Learning for Verification</title>
+<title>V⇄L</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -497,12 +497,12 @@ footer{
 
 <nav>
   <div class="nav-inner">
-    <div class="wordmark"><span class="arrows">V⇄L</span><span class="sub">VERIFICATION ⇄ LEARNING LAB</span></div>
+    <div class="wordmark"><span class="arrows">V⇄L</span><span class="sub">VERIFICATION AND LEARNING FOR INTELLIGENT SYSTEMS</span></div>
     <div class="nav-links">
-      <a href="#mission">Mission</a>
-      <a href="#research">Research</a>
-      <a href="#demo">Bound Demo</a>
-      <a href="#projects">Projects</a>
+      <!-- <a href="#mission">Mission</a> -->
+      <!-- <a href="#research">Research</a> -->
+      <a href="#demo">Interactive</a>
+      <a href="#oss">Open Source Software</a>
       <a href="#join">Join</a>
     </div>
   </div>
@@ -515,22 +515,29 @@ footer{
     <div>
       <div class="eyebrow">Emmy Noether Research Group · DFG · MPI‑IS Tübingen</div>
       <h1>Proving neural networks <span class="flip">won't</span> do the wrong thing.</h1>
-      <p class="lede">We build formal safety guarantees for learning-enabled autonomous systems — reachability analysis, neural network verification, and safe control — treating verification and learning as two directions of the same problem.</p>
-      <div class="tag-row">
+      <p class="lede">We build formal safety guarantees for learning-enabled autonomous systems — using tools such as reachability analysis, neural network verification, and more.</p>
+      <!-- <div class="tag-row">
         <span class="tag">reachability analysis</span>
         <span class="tag">NN verification</span>
         <span class="tag">safe control</span>
         <span class="tag">Julia</span>
-      </div>
+      </div> -->
       <div class="btn-row">
-        <a href="#demo" class="btn btn-primary">Try the bound demo →</a>
+        <!-- <a href="#demo" class="btn btn-primary">Try the bound demo →</a> -->
         <a href="#join" class="btn btn-ghost">Join the group</a>
       </div>
     </div>
+  </section>
 
+  <!-- Reachability DEMO -->
+  <section id="demo">
+    <div class="section-head">
+    <div class="eyebrow">Interactive</div>
+    <h2>Explore Reachability Analysis</h2>
+    </div>
     <div class="demo-panel">
       <div class="demo-panel-head">
-        <div class="demo-panel-title">reachable_set_sandbox.jl — live</div>
+        <div class="demo-panel-title">Reachable Set Sandbox </div>
         <div class="dots"><span></span><span></span><span></span></div>
       </div>
       <div id="heroCanvasWrap">
@@ -550,9 +557,9 @@ footer{
   </section>
 
   <!-- MISSION -->
-  <section id="mission">
+  <!-- <section id="mission">
     <div class="section-head">
-      <div class="eyebrow">Thesis</div>
+      <div class="eyebrow">Research Directions</div>
       <h2>Two directions, one loop.</h2>
       <p>Most of formal methods asks how to verify a system after it's built. We also ask the reverse: how should verification requirements shape the way a system learns in the first place.</p>
     </div>
@@ -563,7 +570,7 @@ footer{
           <span class="arrow">⟶</span>
           <span class="node b">Verification</span>
         </div>
-        <div class="caption">A trained policy or perception network is treated as an unknown, Lipschitz-ish function. Reachability analysis and NN bound-propagation certify what it can and cannot do — before it ever meets the real world.</div>
+        <div class="caption">Reachability analysis and NN bound-propagation can certify what a trained policy can and cannot do — before it ever meets the real world.</div>
       </div>
       <div class="equation-block">
         <div class="flow">
@@ -574,50 +581,22 @@ footer{
         <div class="caption">Verification isn't only a check at the end. Reachability constraints and provable bounds can be folded back into training and control synthesis, so the learned component is shaped by what needs to be provable.</div>
       </div>
     </div>
-  </section>
-
-  <!-- RESEARCH PILLARS -->
-  <section id="research">
-    <div class="section-head">
-      <div class="eyebrow">Research</div>
-      <h2>Three axes, one state space.</h2>
-      <p>Each project in the group sits somewhere on these three axes — often on more than one at once.</p>
-    </div>
-    <div class="pillars">
-      <div class="pillar" tabindex="0">
-        <div class="axis">AXIS X — SET PROPAGATION</div>
-        <h3>Reachability analysis</h3>
-        <p>Computing what states a system can reach — forward from an initial set, or backward from an unsafe one.</p>
-        <div class="detail">Forward: overapproximate the flow of an initial set under known or learned dynamics.<br>Backward: find every initial condition that can still reach an unsafe region — the basis for BackReach.</div>
-      </div>
-      <div class="pillar" tabindex="0">
-        <div class="axis">AXIS Y — NETWORK BOUNDS</div>
-        <h3>Neural network verification</h3>
-        <p>Certifying input–output properties of trained networks with sound, tight bound-propagation.</p>
-        <div class="detail">Interval bound propagation, CROWN-style linear relaxation, α/β optimization, and branch-and-bound — the machinery behind CrownLite.</div>
-      </div>
-      <div class="pillar" tabindex="0">
-        <div class="axis">AXIS Z — CLOSED LOOP</div>
-        <h3>Safe control</h3>
-        <p>Combining the two: certifying that a neural network <em>inside a control loop</em> keeps the whole system safe.</p>
-        <div class="detail">Neural feedback loops, invariance conditions, and fixed-point reachability for policies that are themselves learned.</div>
-      </div>
-    </div>
-  </section>
+  </section> -->
 
   <!-- BOUND DEMO -->
   <section id="demo">
     <div class="section-head">
       <div class="eyebrow">Interactive</div>
-      <h2>Watch a bound get tighter.</h2>
-      <p>Naive interval bound propagation (IBP) is sound but loose — errors compound layer by layer. Linear relaxation (CROWN-style) keeps a symbolic bound instead of a box, and stays far tighter through depth. Step through the layers below.</p>
+      <h2>Explore bound propagation.</h2>
+      <p>Bounds are often propagated layer by layer through a network. 
+        The tightness of the bounds depends on the propagation method. For example, Interval Bound Propagation (IBP) is fast but loose, while other methods liked Mixed Integer Programming (MIP) are slower but tighter.</p>
     </div>
 
     <div class="bound-demo">
       <div class="bound-controls">
-        <button class="mini-btn active" id="modeBoth">IBP vs. CROWN</button>
+        <button class="mini-btn active" id="modeBoth">IBP vs. MIP</button>
         <button class="mini-btn" id="modeIBP">IBP only</button>
-        <button class="mini-btn" id="modeCROWN">CROWN only</button>
+        <button class="mini-btn" id="modeCROWN">MIP only</button>
         <span style="flex:1"></span>
         <button class="mini-btn" id="btnStepBack">◂ layer</button>
         <button class="mini-btn" id="btnStepFwd">layer ▸</button>
@@ -626,39 +605,36 @@ footer{
       <div id="nnSvgWrap"></div>
       <div class="bound-legend">
         <div class="legend-item"><span class="legend-swatch" style="background:var(--violet)"></span> IBP bound (loose)</div>
-        <div class="legend-item"><span class="legend-swatch" style="background:var(--cyan)"></span> CROWN bound (tight)</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--cyan)"></span> MIP bound (tight)</div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span> current layer</div>
       </div>
     </div>
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects">
+  <section id="oss">
     <div class="section-head">
-      <div class="eyebrow">Projects</div>
+      <div class="eyebrow">Open Source Software</div>
       <h2>What's running in the lab.</h2>
     </div>
     <div class="projects">
       <div class="project-card">
-        <div class="ptag">BACKWARD REACHABILITY</div>
-        <h3>BackReach</h3>
-        <p>A Julia package for backward reachability of neural-network-controlled systems — combining polyhedral enclosures with CROWN-based relaxation to backproject unsafe sets through a learned controller.</p>
+        <div class="ptag">REACHABILITY</div>
+        <h3><a href="https://github.com/sisl/OvertVerify.jl">OVERTVerify.jl</a></h3> 
+        <p>A Julia package for forward reachability of neural-network-controlled systems — combining piecewise linear abstractions with a learned NN controller using mixed integer programming.</p>
         <div class="stack-row">
-          <span class="stack-chip">Julia</span>
-          <span class="stack-chip">OvertPoly</span>
-          <span class="stack-chip">CROWN backprojection</span>
-          <span class="stack-chip">vertex &amp; per-simplex LP</span>
+          <span class="stack-chip"><a href="https://julialang.org/">Julia</a></span>
+          <span class="stack-chip"><a href="https://github.com/sisl/Overt.jl">OVERT.jl</a></span>
+          <span class="stack-chip"><a href="https://github.com/jump-dev/JuMP.jl">JuMP.jl</a></span>
         </div>
       </div>
       <div class="project-card">
-        <div class="ptag">NN VERIFICATION</div>
-        <h3>CrownLite</h3>
-        <p>A native Julia reimplementation of α,β-CROWN — backward substitution, α-CROWN slope optimization, MILP encoding, and full branch-and-bound verification, without leaving the Julia ecosystem.</p>
+        <div class="ptag">ABSTRACTION</div>
+        <h3><a href="https://github.com/sisl/Overt.jl">OVERT.jl</a></h3>
+        <p>A native Julia implementation of overapproximation techniques for multidimensional nonlinear functions.</p>
         <div class="stack-row">
-          <span class="stack-chip">Julia</span>
-          <span class="stack-chip">JuMP / HiGHS</span>
-          <span class="stack-chip">branch &amp; bound</span>
-          <span class="stack-chip">NeuralVerification.jl</span>
+          <span class="stack-chip"><a href="https://julialang.org/">Julia</a></span>
+          <span class="stack-chip"><a href="https://github.com/jump-dev/JuMP.jl">JuMP.jl</a></span>
         </div>
       </div>
     </div>
@@ -674,11 +650,11 @@ footer{
         <div class="join-list">
           <div class="join-item">
             <span class="marker">→</span>
-            <div><strong>PhD students</strong><p>Background in controls, formal methods, or ML — strong Julia or numerical computing a plus.</p></div>
+            <div><strong>PhD students</strong><p>Background in ML, optimization, control, and formal methods are advantageous. Prior research experience also beneficial. Apply through ...</p></div>
           </div>
           <div class="join-item">
             <span class="marker">→</span>
-            <div><strong>Postdocs</strong><p>Independent research direction within reachability, NN verification, or safe control.</p></div>
+            <div><strong>Research Engineers</strong><p>Help build key   infrastructure while getting a feel for research.</p></div>
           </div>
           <div class="join-item">
             <span class="marker">→</span>
